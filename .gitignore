@@ -74,3 +74,4 @@ build.xml
 *.toml.bak
 
 *.env
+*.properties
