@@ -1,13 +1,21 @@
 package com.modris.model;
 
+
 import org.springframework.stereotype.Component;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Component
 public class ClientObject{
 
+	@NotNull
 	private String fen;
+	@NotNull
 	private String userId;
+	@NotNull
 	private int chosenElo; // SimpleMessageConverter only supports String, byte[] and Serializable payloads,
+	@Size(min=0, max=4)
 	private String move;
 	
 	public ClientObject() {}

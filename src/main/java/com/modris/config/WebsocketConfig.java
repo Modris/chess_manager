@@ -20,8 +20,8 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer{
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/websocket")
-				.setAllowedOriginPatterns("*")
-				.withSockJS();
+				.setAllowedOriginPatterns("*");
+				//.withSockJS();
 		
 	}
 	
@@ -36,13 +36,17 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer{
 	}
 	@Bean
 	public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
-	    RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 	    rabbitTemplate.setMessageConverter(messageConverter);
+	    
+	   
 	    return rabbitTemplate;
 	}
 
 	@Bean
 	public MessageConverter messageConverter(ObjectMapper jsonMapper) {
 	    return new Jackson2JsonMessageConverter(jsonMapper);
+	    
 	}
+	
 }
