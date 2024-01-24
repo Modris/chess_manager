@@ -40,21 +40,18 @@ public class MessageController {
 	@MessageMapping("/websocket") 
 	public void test(@Valid @Payload ClientObject payload) {
 		if(payload.getFen().equals("Ping")) {
-			//System.out.println("Sending back Pong!");
 			messageTemplate.convertAndSend("/topic/bestmove" + payload.getUserId(), "Pong");
 		} else {
 		
 		if(fenValidator.isFenValid(payload.getFen())) {
-			logger.info("Valid fen!");
 			Chess history = new Chess(payload.getUserId(), payload.getFen(), payload.getMove());
-			System.out.println(payload.toString());
-			String response = (String) rabbit.convertSendAndReceive("main_exchange", "", payload);
-			System.out.println("Received response from worker: " + response);
-			messageTemplate.convertAndSend("/topic/bestmove" + payload.getUserId(), response);
-			history.setMove(response);
-			//chessRepository.save(history);
+		//OFFLOADING BEST MOVE CALL TO SPRING BACKEND WORKER WHICH WILL ANSWER TO THE USER
+			//logger.info("Sending payload to main exchange.");
+			rabbit.convertAndSend("main_exchange", "", payload);
+	
 		} else {
-			logger.error("Invalid fen!"+fenValidator.getErrorMessage());
+			//Invalid Fen. 
+			logger.error(fenValidator.getErrorMessage());
 			messageTemplate.convertAndSend("/topic/bestmove" + payload.getUserId(), "Invalid fen!");
 		}
 		
