@@ -4,8 +4,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FenValidator {
-
+	private String errorMessage;
+	
 	public FenValidator() {
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 	public boolean isFenValid(String fen) {
@@ -13,29 +22,65 @@ public class FenValidator {
 		String[] fenArray = fen.split("/"); // for Piece placement
 		String[] fenArrayExtra = fen.split(" "); // for active color, castling, half move, fullmove
 		String[] fenArrayPieces = fenArrayExtra[0].split("/");
-
-		return  eightPartsCheck(fenArray) 
-				&& sixPartsCheck(fenArrayExtra) 
-				&& activeColor(fenArrayExtra) 
-				&& halfMoveCheck(fenArrayExtra)
-				&& fullMoveCheck(fenArrayExtra) 
-				&& castlingCheck(fenArrayExtra) 
-				&& enPassantCheck(fenArrayExtra)
-				&& twoKingsCheck(fenArrayPieces) 
-				&& sixteenPieceCheck(fenArrayPieces);
+		
+		
+		if(!eightPartsCheck(fenArray)) {
+			setErrorMessage("Fen validation syntax is invalid. The fen should be divided into eight parts by the Slash / symbol.");
+			return false;
+		}
+		if(!sixPartsCheck(fenArrayExtra) ) {
+			setErrorMessage("Fen validation syntax is invalid. The fen for piece distribution should be divided into 6 parts.");
+			return false;
+		}
+		if(!activeColor(fenArrayExtra) ) {
+			setErrorMessage("Fen validation syntax is invalid. The active color move is either w or b. Nothing else.");
+			return false;
+		}
+		if(!halfMoveCheck(fenArrayExtra)) {
+			setErrorMessage("Fen validation syntax is invalid. The half move counter should be positive integer above or equal to 0.");
+			return false;
+		}
+		if(!fullMoveCheck(fenArrayExtra) ) {
+			setErrorMessage("Fen validation syntax is invalid. The full move counter should be positive integer above or equal to 1.");
+			return false;
+		}
+		if(!castlingCheck(fenArrayExtra) ) {
+			setErrorMessage("Fen validation syntax is invalid. The castling can either have KQ, kq or - symbol.");
+			return false;
+		}
+		if(! enPassantCheck(fenArrayExtra)) {
+			setErrorMessage("Fen validation syntax is invalid. En passant location in the fen (after king) either '-' or valid square like 'e6' is possible. Max length 1 or 2.");
+			return false;
+		}
+		if(!twoKingsCheck(fenArrayPieces)) {
+			setErrorMessage("Fen validation syntax is invalid. Each side should have only 2 kings. No more, no less.");
+			return false;
+		}
+		if(!sixteenPieceCheck(fenArrayPieces)) {
+			setErrorMessage("Fen validation syntax is invalid. Check if it's valid piece syntax, sum of 8 for all pieces or one side exceeds 16 piece rule limit.");
+			return false;
+		}
+		return  true;
 	}
 
 	public boolean eightPartsCheck(String fen[]) {
-		if (fen.length == 8) {
-			return true;
-		} else {
-			throw new FenValidationEightPartException("t");
-		}
+		return fen.length == 8;
 
 	}
 
 	public boolean sixPartsCheck(String fen[]) {
 		return fen.length == 6;
+		/*
+		 Six parts  1) piece order 2) active color 3) castling rights
+		 4) en pessant 5) half move 6) full move
+		 Example:
+		 rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+			w
+			-
+			-
+			0
+			1 
+		 */
 
 	}
 
@@ -44,13 +89,17 @@ public class FenValidator {
 	}
 
 	public boolean twoKingsCheck(String fen[]) {
-		int twoKingCount = 0;
+		int smallKingCount = 0; // k king counter
+		int bigKingCount = 0; // K king counter
 		for (int i = 0; i < fen.length; i++) {
-			if (fen[i].contains("k") || fen[i].contains("K")) {
-				twoKingCount++;
+			if(fen[i].contains("k")) {
+				smallKingCount++;
+			}
+			if (fen[i].contains("K")) {
+				bigKingCount++;
 			}
 		}
-		return twoKingCount == 2;
+		return smallKingCount == 1 && bigKingCount == 1;
 	}
 
 	public boolean sixteenPieceCheck(String fen[]) {
@@ -84,7 +133,7 @@ public class FenValidator {
 				}
 			}
 		}
-		return whitePieceCount <= 16 || blackPieceCount <= 16 || (whitePieceCount + blackPieceCount) <= 32;
+		return whitePieceCount <= 16 && blackPieceCount <= 16 && (whitePieceCount + blackPieceCount) <= 32;
 	}
 
 	public boolean pieceSyntax(char piece) {
@@ -97,7 +146,7 @@ public class FenValidator {
 	}
 
 	public boolean enPassantCheck(String fen[]) {
-		// Either '-' or 'e6' is possible. Max length 1 or 2.
+		// Either '-' or valid square e.g. 'e6' is possible. Max length 1 or 2.
 		if (fen[3].length() == 1 && fen[3].charAt(0) == '-') {
 			return true;
 		} else if (fen[3].length() == 2) {
@@ -117,16 +166,26 @@ public class FenValidator {
 
 	public boolean castlingCheck(String fen[]) {
 		fen[2] = fen[2].toLowerCase();
+		int n = 0;
+		if(fen[2].contains("-")) {
+			if(fen[2].length() == 1) {
+				return true; // if it contains "-" character then it can only be length 1
+			} else {
+				return false;
+			}
+		}
 		if (fen[2].length() <= 4) { // max we can have kQkQ. No more.
 			for (int i = 0; i < fen[2].length(); i++) {
-				if (fen[2].charAt(i) == 'k' || fen[2].charAt(i) == 'q' || fen[2].charAt(i) == '-') {
-					return true;
+				if (fen[2].charAt(i) == 'k' || fen[2].charAt(i) == 'q') {
+					n++;
+
 				} else {
 					return false;
 				}
-			}
-		} else {
-			return false;
+			} // for cycle end
+		} 
+		if(n==fen[2].length()) {
+			return true;
 		}
 		// Future castling check: 
 		// if rooks are not in their starting positions no castling rights
@@ -134,12 +193,28 @@ public class FenValidator {
 		return false;
 	}
 
+	/*
+	 HalfMove and FullMove check doesn't check the actual move count.
+	 For example if halfmove is 0 then fullmove is 1. And so on.
+	 Because the stockfish engine doesn't care about that when calculating
+	 the best move.
+	 */
 	public boolean halfMoveCheck(String fen[]) {
-		return Integer.valueOf(fen[4]) >= 0;
+		try {
+			return Integer.valueOf(fen[4]) >= 0;
+	    } catch (NumberFormatException nfe) { // not integer if thrown
+	        return false;
+	    }
 
 	}
 
 	public boolean fullMoveCheck(String fen[]) {
-		return Integer.valueOf(fen[5]) >= 1;
+		try {
+			return Integer.valueOf(fen[5]) >= 1;
+	    } catch (NumberFormatException nfe) { // not integer if thrown
+	        return false;
+	    }
+		
 	}
+	
 }

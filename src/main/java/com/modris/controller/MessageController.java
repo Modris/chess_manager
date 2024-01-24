@@ -36,6 +36,7 @@ public class MessageController {
 		this.fenValidator = fenValidator;
 	}
 
+
 	@MessageMapping("/websocket") 
 	public void test(@Valid @Payload ClientObject payload) {
 		if(payload.getFen().equals("Ping")) {
@@ -53,7 +54,7 @@ public class MessageController {
 			history.setMove(response);
 			//chessRepository.save(history);
 		} else {
-			logger.info("Invalid fen!");
+			logger.error("Invalid fen!"+fenValidator.getErrorMessage());
 			messageTemplate.convertAndSend("/topic/bestmove" + payload.getUserId(), "Invalid fen!");
 		}
 		
