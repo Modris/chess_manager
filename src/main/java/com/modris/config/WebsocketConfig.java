@@ -28,7 +28,8 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer{
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		config.enableStompBrokerRelay("/topic","/exchange","/queue")
-				.setRelayHost("localhost")
+				//.setRelayHost("localhost")
+				.setRelayHost("rabbitmq")
 				.setRelayPort(61613)
 				.setClientLogin("guest")
 				.setClientPasscode("guest");

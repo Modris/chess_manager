@@ -1,5 +1,5 @@
 package com.modris.errorhandling;
-
+/*
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 
 public class CustomFatalExceptionStrategy extends ConditionalRejectingErrorHandler.DefaultExceptionStrategy{
@@ -12,3 +12,5 @@ public class CustomFatalExceptionStrategy extends ConditionalRejectingErrorHandl
     }
 	
 }
+
+*/

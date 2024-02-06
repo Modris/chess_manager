@@ -12,10 +12,8 @@ import org.springframework.messaging.handler.annotation.support.MethodArgumentNo
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
-import com.modris.model.Chess;
 import com.modris.model.ClientObject;
 import com.modris.model.FenValidator;
-import com.modris.repositories.ChessRepository;
 
 import jakarta.validation.Valid;
 
@@ -24,9 +22,9 @@ public class MessageController {
 	private final static Logger logger = LoggerFactory.getLogger(MessageController.class);
 	private final RabbitTemplate rabbit;
 	private final SimpMessageSendingOperations messageTemplate;
-	private final ChessRepository chessRepository;
+	//private final ChessRepository chessRepository;
 	private FenValidator fenValidator;
-	
+/*
 	@Autowired
 	public MessageController(RabbitTemplate rabbit, SimpMessageSendingOperations messageTemplate,
 			ChessRepository chessRepository, FenValidator fenValidator) {
@@ -35,7 +33,16 @@ public class MessageController {
 		this.chessRepository = chessRepository;
 		this.fenValidator = fenValidator;
 	}
+*/
 
+	@Autowired
+	public MessageController(RabbitTemplate rabbit, SimpMessageSendingOperations messageTemplate,
+			FenValidator fenValidator) {
+		this.rabbit = rabbit;
+		this.messageTemplate = messageTemplate;
+		
+		this.fenValidator = fenValidator;
+	}
 
 	@MessageMapping("/websocket") 
 	public void test(@Valid @Payload ClientObject payload) {
@@ -44,7 +51,7 @@ public class MessageController {
 		} else {
 		
 		if(fenValidator.isFenValid(payload.getFen())) {
-			Chess history = new Chess(payload.getUserId(), payload.getFen(), payload.getMove());
+		//	Chess history = new Chess(payload.getUserId(), payload.getFen(), payload.getMove());
 		//OFFLOADING BEST MOVE CALL TO SPRING BACKEND WORKER WHICH WILL ANSWER TO THE USER
 			//logger.info("Sending payload to main exchange.");
 			rabbit.convertAndSend("main_exchange", "", payload);
