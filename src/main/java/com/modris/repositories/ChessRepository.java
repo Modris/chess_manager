@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.modris.model.SaveGame;
 
 
-public interface SaveGameRepository extends JpaRepository<SaveGame,Long> {
+public interface ChessRepository extends JpaRepository<SaveGame,Long> {
 
 	@Query("SELECT COUNT(CASE WHEN s.wins = 1 THEN 1 END), " +
 		       "COUNT(CASE WHEN s.losses = 1 THEN 1 END), " +

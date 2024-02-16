@@ -6,6 +6,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "chess_games")
@@ -15,21 +19,34 @@ public class SaveGame {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	
 	private String winner;
 	
+	@NotNull
+	@Min(value = 1320, message = "Elo must be at least 1320")
+	@Max(value = 3190, message = "Elo must be at most 3190")
 	private String elo;
 	
+	@NotNull
+	@Pattern(regexp = "black|white")
 	private String color;
 	
+	@NotNull
+	@Pattern(regexp = "([abcdefgh][1-8][abcdefgh][1-8][qnbr]?,?)+")
 	private String moves;
 	
+	@NotNull
 	private String fen;
 	
+	
 	private String username_id;
+	
 	
 	private String game_id;
 	
 	@Transient
+	@NotNull
+	@Pattern(regexp = "Draw|Win|Loss")
 	private String result; 
 	
 	private int wins;
