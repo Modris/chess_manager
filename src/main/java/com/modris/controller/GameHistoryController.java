@@ -35,11 +35,11 @@ public class GameHistoryController {
 
 	
 
-	//@PreAuthorize("isAuthenticated()")
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/save")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void saveGame(@Valid SaveGame saveGame, Authentication auth) {
-		chessService.saveGame(saveGame, "abc");
+		chessService.saveGame(saveGame, auth.getName());
 		
 	}
 	
