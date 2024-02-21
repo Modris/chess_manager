@@ -43,7 +43,7 @@ public class MessageController {
 		//OFFLOADING BEST MOVE CALL TO SPRING BACKEND WORKER WHICH WILL ANSWER TO THE USER
 			//logger.info("Sending payload to main exchange.");
 			rabbit.convertAndSend("main_exchange", "", payload);
-	
+		
 		} else {
 			//Invalid Fen. 
 			logger.error(fenValidator.getErrorMessage());

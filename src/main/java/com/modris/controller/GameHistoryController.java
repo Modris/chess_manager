@@ -53,8 +53,8 @@ public class GameHistoryController {
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/getGameHistory")
 	public Page<SaveGame> fetchGameHistory(
-			@RequestParam(value = "page",required=false) String page,
-			@RequestParam(value = "pageSize",required=false) String pageSize,
+			@RequestParam(value = "page",required=false, defaultValue = "0") String page,
+			@RequestParam(value = "pageSize",required=false, defaultValue = "5") String pageSize,
 			Authentication auth) {
 		
 		return chessService.fetchGameHistory(page, pageSize, auth.getName());

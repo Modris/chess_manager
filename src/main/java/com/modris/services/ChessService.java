@@ -86,14 +86,12 @@ public class ChessService {
 
 	public Page<SaveGame> fetchGameHistory(String page, String pageSize, String username_id) {
 
-		System.out.println(page);
-		System.out.println(pageSize);
+
 		if(page == null || pageSize == null ) {
 			page = "0";
 			pageSize = "5";
 		}
-		System.out.println(page);
-		System.out.println(pageSize);
+
 		int pageInt = Integer.valueOf(page);
 		int pageSizeInt = Integer.valueOf(pageSize);
 		Pageable sortedByIdDesc = PageRequest.of(pageInt, pageSizeInt, Sort.by("id").descending());
@@ -102,6 +100,7 @@ public class ChessService {
 		if(history.isEmpty()) {
 			throw new HistoryIsEmptyException(username_id);
 		}
+		System.out.println(history);
 		return history;
 		
 	}

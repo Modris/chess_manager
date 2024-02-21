@@ -6,13 +6,18 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig  {
 
-
+	@Value("${RABBITMQ_USERNAME}")
+	private String usernameRabbit;
+	
+	@Value("${RABBITMQ_PASSWORD}")
+	private String passwordRabbit;
 		
 	// Exchange and Queues
 	@Bean
@@ -33,8 +38,8 @@ public class RabbitMQConfig  {
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory("rabbitmq");
-		connectionFactory.setUsername("guest");
-		connectionFactory.setPassword("guest");
+		connectionFactory.setUsername(usernameRabbit);
+		connectionFactory.setPassword(passwordRabbit);
 		return connectionFactory;
 	}
 }
