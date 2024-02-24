@@ -75,5 +75,3 @@ build.xml
 
 *.env
 *.properties
-*.yaml
-*.yml

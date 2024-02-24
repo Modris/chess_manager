@@ -177,7 +177,7 @@ public class ChessServiceTests extends TestContainersBase{
 				() -> chessService.getGameWithId("ooga-booga2")
         );
 
-        assertEquals("A book with game id: `ooga-booga2` not found.", exception.getMessage());
+        assertEquals("Game with game id: `ooga-booga2` not found.", exception.getMessage());
 		
 	}
 	
